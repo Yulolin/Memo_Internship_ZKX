@@ -116,7 +116,7 @@ public class PlayerController : MonoBehaviour
     
     private void OnCollisionEnter2D(Collision2D other)
     {
-        if (other.gameObject.CompareTag("Ground"))
+        if (other.gameObject.CompareTag("Ground")&&MathF.Abs(rb.velocity.y)<1e-5)
         {
             _isGrounded = true;
             ChangeState(idleState);
@@ -125,7 +125,7 @@ public class PlayerController : MonoBehaviour
 
     private void OnCollisionStay2D(Collision2D other)
     {
-        if (other.gameObject.CompareTag("Ground"))
+        if (other.gameObject.CompareTag("Ground")&&MathF.Abs(rb.velocity.y)<1e-5)
         {
             _isGrounded = true;
             // Debug.Log(isGrounded);
@@ -134,7 +134,7 @@ public class PlayerController : MonoBehaviour
 
     private void OnCollisionExit2D(Collision2D other)
     {
-        if (other.gameObject.CompareTag("Ground"))
+        if (other.gameObject.CompareTag("Ground")&&MathF.Abs(rb.velocity.y)>1e-5)
         {
             _isGrounded = false;
             ChangeState(jumpState);
