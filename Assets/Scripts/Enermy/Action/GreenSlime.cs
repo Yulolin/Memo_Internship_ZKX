@@ -1,9 +1,10 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 
-public class GreenSlime : MonoBehaviour
+public class GreenSlime : Enemy
 {
     [SerializeField] private Transform left;
     [SerializeField] private Transform right;
@@ -17,6 +18,8 @@ public class GreenSlime : MonoBehaviour
     // 二次函数的k项
     private float k = 0;
     private Vector3 velocity;             // 当前的速度（水平和垂直分量）
+    
+    Coroutine jumpCoroutine;
     private void Start()
     {
         animator = GetComponent<Animator>();
@@ -28,37 +31,41 @@ public class GreenSlime : MonoBehaviour
         else{
             animator.SetBool("LeftJump",true);
         }
-        StartCoroutine(StartAJump());
+        jumpCoroutine = StartCoroutine(StartAJump());
     }
     
     float jumpTimeCounter = 0f;
     IEnumerator StartAJump()
     {
+        Vector3 startPos = transform.position;
+        Vector3 nextPos = startPos;
+        if (isRight)
+        {
+            nextPos.x += jumpDis;
+        }
+        else
+        {
+            nextPos.x -= jumpDis;
+            
+        }
+        Vector3 highPos = (startPos + nextPos) / 2 + new Vector3(0, jumpHeight, 0);
 
-        Vector3 pos = transform.position;
         while (jumpTimeCounter < jumpTime)
         {
-            // 获取动画的播放进度（normalizedTime）
-            float normalizedTime = animator.GetCurrentAnimatorStateInfo(0).normalizedTime % 1f;
-            if (isRight)
+            float step = jumpTimeCounter / jumpTime;
+            if (step > 0.99)
             {
-                float x = normalizedTime * jumpDis;
-                float y = k * (x - 0.5f * jumpDis) * (x - 0.5f * jumpDis) + jumpHeight;
-                transform.position =
-                    new Vector3(pos.x + x, pos.y + y, pos.z);
-                jumpTimeCounter += Time.deltaTime;
+                step = 1;
+                jumpTimeCounter = jumpTime;
             }
-            else
-            {
-                float x = -normalizedTime * jumpDis;
-                float y = k * (x + 0.5f * jumpDis) * (x + 0.5f * jumpDis) + jumpHeight;
-                transform.position =
-                    new Vector3(pos.x + x, pos.y + y, pos.z);
-                jumpTimeCounter += Time.deltaTime;
-            }
+            // Debug.Log(step);
+            Vector3 currentPos = (1 - step) * (1 - step) * startPos + 2 * (1 - step) * step * highPos +
+                                 step * step * nextPos;
+            transform.position = currentPos;
+            jumpTimeCounter+=Time.deltaTime;
             yield return null;
         }
-
+        transform.position = new Vector3(transform.position.x, startPos.y, transform.position.z);
         if (isRight&&transform.position.x >= right.position.x)
         {
             isRight = false;
@@ -73,7 +80,33 @@ public class GreenSlime : MonoBehaviour
         }
 
         jumpTimeCounter = 0;
-        StartCoroutine(StartAJump());
+        jumpCoroutine = StartCoroutine(StartAJump());
     }
-    
+
+    private void OnTriggerStay2D(Collider2D other)
+    {
+        if (other.gameObject.CompareTag("Player"))
+        {
+            PlayerController player = other.gameObject.GetComponent<PlayerController>();
+            other.GetComponent<PlayerController>().ChangeState(player.hitState);
+        }
+    }
+
+    public override void OnAttacked()
+    {
+        animator.SetBool("Dead",true);
+        StopCoroutine(jumpCoroutine);
+        Rigidbody2D rb = gameObject.GetComponent<Rigidbody2D>();
+        rb.bodyType = RigidbodyType2D.Dynamic;
+        rb.velocity = new Vector2(0,10);
+        Collider2D col = gameObject.GetComponent<Collider2D>();
+        col.enabled = false;
+        Dead();
+    }
+
+    async Task Dead()
+    {
+        await Task.Delay(3000);
+        Destroy(gameObject.transform.parent.gameObject);
+    } 
 }

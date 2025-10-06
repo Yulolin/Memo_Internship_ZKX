@@ -14,24 +14,28 @@ public class PlayerController : MonoBehaviour
 
     public float arrowSpeed = 10f;
     // 箭矢预制体和生成位置
-    public GameObject arrowPrefab;
     public Transform arrowPos;
     
     private bool _isGrounded = false;
     public bool isGrounded { get{return _isGrounded;} }
     private bool isAttacking = false;
 
+    public float invincibleTime = 3f;
+    public bool isInvincible = false;
+
     private Rigidbody2D rb;
+    public Animator animator;
     
     private State currentState;
     public IdleState idleState;
     private MoveState moveState;
     private JumpState jumpState;
     private AttackState attackState;
-    private HitState hitState;
+    public HitState hitState;
     void Start()
     {
         rb =  GetComponent<Rigidbody2D>();
+        animator = GetComponent<Animator>();
         idleState = new IdleState(this);
         moveState = new MoveState(this);
         jumpState = new JumpState(this);
@@ -65,11 +69,6 @@ public class PlayerController : MonoBehaviour
             if (canChangeState)
                 ChangeState(moveState);
         }
-        else
-        {
-            if (canChangeState)
-                ChangeState(idleState);
-        }
         rb.velocity = new Vector2(horizontalInput * moveSpeed, rb.velocity.y);
     }
 
@@ -78,6 +77,10 @@ public class PlayerController : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.W) && isGrounded)
         {
             rb.velocity = new Vector2(rb.velocity.x, jumpForce);
+            ChangeState(jumpState);
+        }
+        else if (!isGrounded && rb.velocity.y < -1e-6)
+        {
             ChangeState(jumpState);
         }
     }
@@ -92,7 +95,8 @@ public class PlayerController : MonoBehaviour
     // 生成箭矢
     public void CreateArrow()
     {
-        GameObject arrow =  Instantiate(arrowPrefab,arrowPos.position,arrowPos.rotation);
+        GameObject arrow =  ArrowPool.Instance.GetArrow(arrowPos);
+        
         Rigidbody2D arrowRB = arrow.GetComponent<Rigidbody2D>();
         // 调整朝向
         bool facingRight = transform.localScale.x > 0;
@@ -109,11 +113,25 @@ public class PlayerController : MonoBehaviour
         {
             return;
         }
+
+        if (isInvincible&&newState==hitState)
+        {
+            return;
+        }
         currentState.Exit();
         currentState = newState;
         currentState.Enter();
     }
-    
+    // 开始一个协程，供状态类调用
+    public Coroutine StartACoroutine(IEnumerator enumerator)
+    {
+        return StartCoroutine(enumerator);
+    }
+    // 停止一个协程，供状态类调用
+    public void StopACoroutine(IEnumerator enumerator)
+    {
+        StopCoroutine(enumerator);
+    }
     private void OnCollisionEnter2D(Collision2D other)
     {
         if (other.gameObject.CompareTag("Ground")&&MathF.Abs(rb.velocity.y)<1e-5)

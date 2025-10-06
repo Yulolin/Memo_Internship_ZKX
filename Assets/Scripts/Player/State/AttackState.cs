@@ -9,6 +9,7 @@ public class AttackState : State
     public override void Enter()
     {
         Debug.Log("进入Attack");
+        player.animator.SetTrigger("Attack");
     }
 
     private float timeCount = 0;
