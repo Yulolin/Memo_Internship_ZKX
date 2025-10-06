@@ -11,10 +11,13 @@ public class Coin : MonoBehaviour
     
     public int Score;
 
+    public AudioSource audioSource;
+
     private void OnCollisionEnter2D(Collision2D other)
     {
         if (other.gameObject.CompareTag("Player"))
         {
+            audioSource.Play();
             PlayerManager.Instance.AddScore(Score);
             if (Score == 100)
             {
@@ -24,7 +27,6 @@ public class Coin : MonoBehaviour
             {
                 CoinPool.Instance.ReturnSilverCoin(gameObject);
             }
-            
         }
     }
 }

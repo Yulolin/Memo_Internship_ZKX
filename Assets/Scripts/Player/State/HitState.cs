@@ -18,6 +18,8 @@ public class HitState : State
         t = 0;
         player.animator.SetBool("Hit", true);
         player.animator.SetTrigger("StartHit");
+        player.audioSource.clip = AudioManager.Instance.PlayerHit;
+        player.audioSource.Play();
         SetInvincible();
         // player
     }

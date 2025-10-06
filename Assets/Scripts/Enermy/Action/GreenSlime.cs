@@ -18,8 +18,9 @@ public class GreenSlime : Enemy
     private Vector3 velocity;             // 当前的速度（水平和垂直分量）
     
     Coroutine jumpCoroutine;
-    private void Start()
+    protected void Start()
     {
+        base.Start();
         animator = GetComponent<Animator>();
         if (isRight)
         {
@@ -82,6 +83,8 @@ public class GreenSlime : Enemy
 
     public override void OnAttacked()
     {
+        audioSource.clip = AudioManager.Instance.EnemyBeAttacked;
+        audioSource.Play();
         animator.SetBool("Dead",true);
         StopCoroutine(jumpCoroutine);
         Rigidbody2D rb = gameObject.GetComponent<Rigidbody2D>();

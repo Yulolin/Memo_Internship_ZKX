@@ -43,6 +43,10 @@ public class ArrowPool : MonoBehaviour
     // 回收箭矢
     public void ReturnArrow(GameObject arrow)
     {
+        if (arrow.activeSelf == false)
+        {
+            return;
+        }
         arrowPool.Release(arrow);  // 将箭矢归还给池中
     }
 

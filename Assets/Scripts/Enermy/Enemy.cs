@@ -5,6 +5,13 @@ using UnityEngine;
 
 public abstract class Enemy : MonoBehaviour
 {
+    public AudioSource audioSource;
+    protected void Start()
+    {
+        LevelManager.Instance.RegisterEnemy(this);
+        audioSource = gameObject.AddComponent<AudioSource>();
+        audioSource.playOnAwake = false;
+    }
     public virtual void OnAttacked()
     {
         // 实现敌人被攻击的逻辑
@@ -26,5 +33,6 @@ public abstract class Enemy : MonoBehaviour
         rb.velocity = new Vector2(0, coin.GetComponent<Coin>().CreateVelocityY);
         await Task.Delay(3000);
         Destroy(gameObject.transform.parent.gameObject);
+        LevelManager.Instance.RemoveEnemy(this);
     } 
 }

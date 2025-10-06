@@ -25,6 +25,7 @@ public class PlayerController : MonoBehaviour
 
     private Rigidbody2D rb;
     public Animator animator;
+    public AudioSource audioSource;
     
     private State currentState;
     public IdleState idleState;
@@ -78,6 +79,8 @@ public class PlayerController : MonoBehaviour
         {
             rb.velocity = new Vector2(rb.velocity.x, jumpForce);
             ChangeState(jumpState);
+            audioSource.clip = AudioManager.Instance.PlayerJump;
+            audioSource.Play();
         }
         else if (!isGrounded && rb.velocity.y < -1e-6)
         {

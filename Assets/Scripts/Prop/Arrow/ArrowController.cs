@@ -19,12 +19,17 @@ public class ArrowController : MonoBehaviour
     // 协程
     Coroutine currentCoroutine;
     Coroutine blinkCoroutine;
+    
+    AudioSource audioSource;
     void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
         platform =  GetComponent<PlatformEffector2D>();
         collider = GetComponent<Collider2D>();
         // rb.velocity = transform.right * speed;
+        audioSource = gameObject.AddComponent<AudioSource>();
+        audioSource.clip = AudioManager.Instance.ArrowCreate;
+        audioSource.playOnAwake = false;
     }
 
     private void OnEnable()
@@ -34,6 +39,7 @@ public class ArrowController : MonoBehaviour
         collider.usedByEffector = false;
         rb.bodyType = RigidbodyType2D.Dynamic;
         gameObject.tag = "Prop";
+        audioSource.Play();
     }
 
     public void OnCollisionEnter2D(Collision2D other)
