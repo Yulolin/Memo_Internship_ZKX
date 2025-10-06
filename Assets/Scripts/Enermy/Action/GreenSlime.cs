@@ -9,21 +9,18 @@ public class GreenSlime : Enemy
     [SerializeField] private Transform left;
     [SerializeField] private Transform right;
     private Animator  animator;
-    public float deadTime = 0.333f;
     public float jumpTime = 0.833f;
     public bool isRight = true;
 
     public float jumpDis = 5f;
     public float jumpHeight = 0.5f;
     // 二次函数的k项
-    private float k = 0;
     private Vector3 velocity;             // 当前的速度（水平和垂直分量）
     
     Coroutine jumpCoroutine;
     private void Start()
     {
         animator = GetComponent<Animator>();
-        k = -jumpHeight * 4 / jumpDis / jumpDis;
         if (isRight)
         {
             animator.SetBool("RightJump",true);
@@ -83,15 +80,6 @@ public class GreenSlime : Enemy
         jumpCoroutine = StartCoroutine(StartAJump());
     }
 
-    private void OnTriggerStay2D(Collider2D other)
-    {
-        if (other.gameObject.CompareTag("Player"))
-        {
-            PlayerController player = other.gameObject.GetComponent<PlayerController>();
-            other.GetComponent<PlayerController>().ChangeState(player.hitState);
-        }
-    }
-
     public override void OnAttacked()
     {
         animator.SetBool("Dead",true);
@@ -104,9 +92,5 @@ public class GreenSlime : Enemy
         Dead();
     }
 
-    async Task Dead()
-    {
-        await Task.Delay(3000);
-        Destroy(gameObject.transform.parent.gameObject);
-    } 
+
 }
