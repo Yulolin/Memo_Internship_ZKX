@@ -82,7 +82,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   moveSpeed: 7
-  jumpForce: 10
+  jumpForce: 8
   arrowDelay: 0.5
   attackDuration: 0.667
   arrowSpeed: 15
