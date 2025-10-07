@@ -16,7 +16,7 @@ public class MapBoundController : MonoBehaviour
     {
         if (other.CompareTag("Player")||other.CompareTag("Prop")||other.CompareTag("Enemy"))
         {
-            // 获取玩家当前位置
+            // 获取当前位置
             Vector3 pos = other.transform.position;
 
             // 判断玩家离开的位置并传送到对应的对面位置

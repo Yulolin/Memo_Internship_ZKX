@@ -85,12 +85,15 @@ MonoBehaviour:
   jumpForce: 10
   arrowDelay: 0.5
   attackDuration: 0.667
-  arrowSpeed: 10
+  arrowSpeed: 15
   arrowPos: {fileID: 957957630467515670}
   invincibleTime: 3
   isInvincible: 0
-  animator: {fileID: 0}
-  audioSource: {fileID: 0}
+  animator: {fileID: 957957631273516677}
+  audioSource: {fileID: 1462435977}
+  BuffTime: 20
+  FlySpeed: 5
+  SpeedRatio: 2
 --- !u!212 &957957631273516678
 SpriteRenderer:
   m_ObjectHideFlags: 0

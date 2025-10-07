@@ -5,12 +5,16 @@ using UnityEngine;
 
 public abstract class Enemy : MonoBehaviour
 {
-    public AudioSource audioSource;
+    protected AudioSource audioSource;
+    protected Animator animator;
+    
     protected void Start()
     {
         LevelManager.Instance.RegisterEnemy(this);
         audioSource = gameObject.AddComponent<AudioSource>();
         audioSource.playOnAwake = false;
+        
+        animator = GetComponent<Animator>();
     }
     public virtual void OnAttacked()
     {
@@ -32,7 +36,7 @@ public abstract class Enemy : MonoBehaviour
         Rigidbody2D rb = coin.GetComponent<Rigidbody2D>();
         rb.velocity = new Vector2(0, coin.GetComponent<Coin>().CreateVelocityY);
         await Task.Delay(3000);
-        Destroy(gameObject.transform.parent.gameObject);
+        Destroy(gameObject);
         LevelManager.Instance.RemoveEnemy(this);
     } 
 }

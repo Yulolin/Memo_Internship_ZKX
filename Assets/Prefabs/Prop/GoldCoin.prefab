@@ -125,7 +125,7 @@ MonoBehaviour:
   CreateVelocityX: 5
   CreateVelocityY: 10
   Score: 100
-  audioSource: {fileID: 0}
+  audioSource: {fileID: 3952637015506273207}
 --- !u!61 &6265463397886278747
 BoxCollider2D:
   m_ObjectHideFlags: 0

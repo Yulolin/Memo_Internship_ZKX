@@ -33,6 +33,18 @@ public class PlayerController : MonoBehaviour
     private JumpState jumpState;
     private AttackState attackState;
     public HitState hitState;
+    public FlyState flyState;
+
+    [Header("Buff参数")] 
+    private Buff currentBuff;
+    public FlyBuff flyBuff;
+    public AccelerateBuff accelerateBuff;
+    public InvincibleBuff invincibleBuff;
+    public float BuffTime = 20f;
+
+    public float FlySpeed = 5f;
+    public float SpeedRatio = 1.5f;
+    
     void Start()
     {
         rb =  GetComponent<Rigidbody2D>();
@@ -43,8 +55,15 @@ public class PlayerController : MonoBehaviour
         attackState = new AttackState(this);
         hitState = new HitState(this);
         
+        flyBuff = new FlyBuff(this);
+        flyState = new FlyState(this, flyBuff);
+
+        accelerateBuff = new AccelerateBuff(this);
+        invincibleBuff = new InvincibleBuff(this);
+        
         currentState = idleState;
         currentState.Enter();
+
     }
 
     // Update is called once per frame
@@ -53,6 +72,7 @@ public class PlayerController : MonoBehaviour
     void Update()
     {
         currentState.Update();
+        currentBuff?.Update();
     }
 
     public void Move(bool canChangeState)
@@ -125,6 +145,24 @@ public class PlayerController : MonoBehaviour
         currentState = newState;
         currentState.Enter();
     }
+
+    public void ChangeBuff(BuffType newBuff)
+    {
+        if (newBuff == BuffType.HP)
+        {
+            PlayerManager.Instance.ChangeHP(1);
+            return;
+        }
+        currentBuff?.Remove();
+        switch (newBuff)
+        {
+            case BuffType.Accelerate: currentBuff = accelerateBuff; break;
+            case BuffType.Invincible: currentBuff = invincibleBuff; break;
+            case BuffType.Fly: currentBuff = flyBuff; break;
+            case BuffType.none: currentBuff = null; break;
+        }
+        currentBuff?.Apply();
+    }
     // 开始一个协程，供状态类调用
     public Coroutine StartACoroutine(IEnumerator enumerator)
     {
@@ -137,7 +175,7 @@ public class PlayerController : MonoBehaviour
     }
     private void OnCollisionEnter2D(Collision2D other)
     {
-        if (other.gameObject.CompareTag("Ground")&&MathF.Abs(rb.velocity.y)<1e-5)
+        if ((other.gameObject.CompareTag("Ground")||other.gameObject.CompareTag("Wall"))&&MathF.Abs(rb.velocity.y)<1e-5)
         {
             _isGrounded = true;
             ChangeState(idleState);
@@ -146,7 +184,7 @@ public class PlayerController : MonoBehaviour
 
     private void OnCollisionStay2D(Collision2D other)
     {
-        if (other.gameObject.CompareTag("Ground")&&MathF.Abs(rb.velocity.y)<1e-5)
+        if ((other.gameObject.CompareTag("Ground")||other.gameObject.CompareTag("Wall"))&&MathF.Abs(rb.velocity.y)<1e-5)
         {
             _isGrounded = true;
             // Debug.Log(isGrounded);
@@ -155,7 +193,7 @@ public class PlayerController : MonoBehaviour
 
     private void OnCollisionExit2D(Collision2D other)
     {
-        if (other.gameObject.CompareTag("Ground")&&MathF.Abs(rb.velocity.y)>1e-5)
+        if ((other.gameObject.CompareTag("Ground")||other.gameObject.CompareTag("Wall"))&&MathF.Abs(rb.velocity.y)>1e-5)
         {
             _isGrounded = false;
             ChangeState(jumpState);

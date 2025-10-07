@@ -7,8 +7,6 @@ using UnityEngine.UI;
 
 public class GameUI : MonoBehaviour
 {
-
-    
     [Header("常规界面")]
     [SerializeField] private List<GameObject> player1HP = new List<GameObject>();
     [SerializeField] private Text scoreText;
@@ -58,6 +56,28 @@ public class GameUI : MonoBehaviour
         PlayerManager.Instance.OnHpChange -= UpdateHP;
         PlayerManager.Instance.OnScoreChange -= UpdateScore;
         LevelManager.Instance.OnlevelSuccess -= OnLevelSuccess;
+    }
+
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            if (pausePanel.activeSelf)
+            {
+                OnResumeBtnClick();
+            }
+            else if(!levelSuccessPanel.activeSelf)
+            {
+                OnPauseBtnClick();
+            }
+        }
+        else if (Input.GetKeyDown(KeyCode.Space))
+        {
+            if (levelSuccessPanel.activeSelf)
+            {
+                OnContinueBtnClick();
+            }
+        }
     }
 
     #region 常规界面

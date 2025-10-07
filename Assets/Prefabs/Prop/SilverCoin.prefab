@@ -125,7 +125,7 @@ MonoBehaviour:
   CreateVelocityX: 5
   CreateVelocityY: 10
   Score: 50
-  audioSource: {fileID: 0}
+  audioSource: {fileID: 3990311561876414704}
 --- !u!61 &1003310822925774413
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -184,7 +184,7 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 8300000, guid: aa77519187ecb6744bc9e4461c2c91bd, type: 3}
-  m_PlayOnAwake: 1
+  m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
   Loop: 0

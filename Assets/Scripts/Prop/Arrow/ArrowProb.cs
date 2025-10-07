@@ -9,7 +9,7 @@ public class ArrowProb : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.gameObject.CompareTag("Ground"))
+        if (other.gameObject.CompareTag("Ground")||other.gameObject.CompareTag("Wall"))
         {
             arrowController.TouchWall();
         }

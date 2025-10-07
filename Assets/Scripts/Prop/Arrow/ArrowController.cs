@@ -50,6 +50,14 @@ public class ArrowController : MonoBehaviour
             Debug.Log("射到敌人");
             ArrowPool.Instance.ReturnArrow(gameObject);
         }
+        else if (other.gameObject.CompareTag("Wall") || other.gameObject.CompareTag("Ground"))
+        {
+            ContactPoint2D contact = other.contacts[0];
+            if (contact.normal.x < -1e-6 || contact.normal.x > 1e-6)
+            {
+                TouchWall();
+            }
+        }
     }
 
     public void OnTriggerEnter2D(Collider2D other)
